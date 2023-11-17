@@ -26,11 +26,9 @@ ft = f"To use this bot you've to join @{fs}."
 
 batch = []
 
-# ... (previous imports and code)
-
 @Drone.on(events.NewMessage(incoming=True, pattern='/cancel'))
 async def cancel(event):
-    if event.sender_id not in batch:
+    if not event.sender_id in batch:
         return await event.reply("No batch active.")
     batch.clear()
     await event.reply("Done.")
@@ -42,7 +40,7 @@ async def _batch(event):
         await event.reply(r)
         return       
     if event.sender_id in batch:
-        return await event.reply("You've already started one batch, wait for it to complete, you dumbfuck owner!")
+        return await event.reply("You've already started one batch, wait for it to complete you dumbfuck owner!")
     async with Drone.conversation(event.chat_id) as conv: 
         if s != True:
             await conv.send_message("Send me the message link you want to start saving from, as a reply to this message.", buttons=Button.force_reply())
@@ -67,7 +65,7 @@ async def _batch(event):
             try:
                 value = int(_range.text)
                 if value > 100:
-                    await conv.send_message("You can only get up to 100 files in a single batch.")
+                    await conv.send_message("You can only get upto 100 files in a single batch.")
                     return conv.cancel()
             except ValueError:
                 await conv.send_message("Range must be an integer!")
@@ -76,9 +74,6 @@ async def _batch(event):
             await run_batch(userbot, Bot, event.sender_id, _link, value) 
             conv.cancel()
             batch.clear()
-
-# ... (rest of the code)
-
 
 async def run_batch(userbot, client, sender, link, _range):
     for i in range(_range):
