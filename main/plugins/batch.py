@@ -28,18 +28,14 @@ batch = []
 
 @Drone.on(events.NewMessage(incoming=True, pattern='/cancel'))
 async def cancel(event):
-    if not event.sender_id in batch:
+    if not event.chat_id in batch:
         return await event.reply("No batch active.")
     batch.clear()
     await event.reply("Done.")
     
 @Drone.on(events.NewMessage(incoming=True, pattern='/batch'))
-async def _batch(event):
-    s, r = await force_sub(event.client, fs, event.sender_id, ft) 
-    if s == True:
-        await event.reply(r)
-        return       
-    if event.sender_id in batch:
+async def _batch(event):      
+    if event.chat_id in batch:
         return await event.reply("You've already started one batch, wait for it to complete you dumbfuck owner!")
     async with Drone.conversation(event.chat_id) as conv: 
         if s != True:
@@ -70,8 +66,8 @@ async def _batch(event):
             except ValueError:
                 await conv.send_message("Range must be an integer!")
                 return conv.cancel()
-            batch.append(event.sender_id)
-            await run_batch(userbot, Bot, event.sender_id, _link, value) 
+            batch.append(event.chat_id)
+            await run_batch(userbot, Bot, event.chat_id, _link, value) 
             conv.cancel()
             batch.clear()
 
