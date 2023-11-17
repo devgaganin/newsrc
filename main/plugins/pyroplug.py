@@ -197,30 +197,20 @@ async def get_msg(userbot, client, bot, sender, edit_id, msg_link, i):
         except Exception:
             pass
         await edit.delete()
-    # ... (previous imports and code)
-
-else:
-    edit = await client.edit_message_text(sender, edit_id, "Cloning.")
-    chat =  msg_link.split("t.me")[1].split("/")[1]
-    try:
-        msg = await client.get_messages(chat, msg_id)
-        if msg.empty:
-            new_link = f't.me/b/{chat}/{int(msg_id)}'
-            # recursion 
-            return await get_msg(userbot, client, bot, sender, edit_id, new_link, i)
-        
-        # Wrap the following line in a try block
+    else:
+        edit = await client.edit_message_text(sender, edit_id, "Cloning.")
+        chat =  msg_link.split("t.me")[1].split("/")[1]
         try:
-            await client.copy_message(sender, chat, msg_id)
+            msg = await client.get_messages(chat, msg_id)
+            if msg.empty:
+                new_link = f't.me/b/{chat}/{int(msg_id)}'
+                #recurrsion 
+                return await get_msg(userbot, client, bot, sender, edit_id, new_link, i)
+        await client.copy_message(sender, chat, msg_id)
         except Exception as e:
             print(e)
             return await client.edit_message_text(sender, edit_id, f'Failed to save: `{msg_link}`\n\nError: {str(e)}')
-        
-    except Exception as e:
-        print(e)
-        return await client.edit_message_text(sender, edit_id, f'Failed to save: `{msg_link}`\n\nError: {str(e)}')
-    
-    await edit.delete()
+        await edit.delete()
         
 async def get_bulk_msg(userbot, client, sender, msg_link, i):
     x = await client.send_message(sender, "Processing!")
